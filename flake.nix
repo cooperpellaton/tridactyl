@@ -18,7 +18,7 @@
           devShells.default = pkgs.mkShell {
             buildInputs = [
               pkgs.yarn
-              pkgs.pre-commit
+              pkgs.shellcheck
             ];
 
             shellHook = ''
