@@ -8,6 +8,7 @@ const eslintConfigPrettier = require("eslint-config-prettier")
 const stylistic = require("@stylistic/eslint-plugin")
 const importOrder = require("eslint-plugin-import")
 const preferArrow = require("eslint-plugin-prefer-arrow")
+const unsupportedApis = require("./custom-eslint-rules/eslint-plugin-unsupported-apis")
 // const tslint = require("@typescript-eslint/eslint-plugin-tslint")
 
 module.exports = [
@@ -88,6 +89,14 @@ module.exports = [
             "compiler/",
             "**/.*.generated.ts"
         ],
+    },
+    {
+        plugins: {
+            unsupportedApis
+        },
+        rules: {
+            "unsupportedApis/enforce-unsupported-apis": "error"
+        }
     },
     {
         plugins: {
