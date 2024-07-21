@@ -5,9 +5,6 @@ module.exports = {
     setupFiles: [
       'jest-webextension-mock',
     ],
-    setupFilesAfterEnv: [
-      './e2e_tests/failfast.js',
-    ],
     testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
     transformIgnorePatterns: [
       'node_modules/(?!(selenium-webdriver)/)',
