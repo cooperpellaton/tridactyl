@@ -20,6 +20,7 @@
               pkgs.yarn
               pkgs.nodejs_22
               pkgs.shellcheck
+              pkgs.shfmt
             ];
 
             shellHook = ''
