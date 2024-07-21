@@ -678,7 +678,7 @@ type HintSelectedCallback = (x: any) => any
 @hidden */
 class Hint {
     public readonly flag = document.createElement("span")
-    public readonly rect: ClientRect = null
+    public readonly rect: DOMRect = null
     public result: any = null
 
     public width = 0
@@ -716,14 +716,12 @@ class Hint {
             }
         }
 
-        this.rect = {
-            top: rect.top + offsetTop,
-            bottom: rect.bottom + offsetTop,
-            left: rect.left + offsetLeft,
-            right: rect.right + offsetLeft,
-            width: rect.width,
-            height: rect.height,
-        }
+        this.rect = new DOMRect(
+            rect.left + offsetLeft,
+            rect.top + offsetTop,
+            rect.width,
+            rect.height
+        )
 
         this.flag.textContent = name
         this.flag.className = "TridactylHint"

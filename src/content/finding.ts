@@ -182,7 +182,7 @@ export async function jumpToMatch(searchQuery, option) {
     const findcase = config.get("findcase")
     const sensitive =
         findcase === "sensitive" ||
-        (findcase === "smart" && /[A-Z]/.test(searchQuery))
+        findcase === "smart" && /[A-Z]/.test(searchQuery)
     const findPromise = await browserBg.find.find(searchQuery, {
         tabId: await activeTabId(),
         caseSensitive: sensitive,
@@ -199,7 +199,6 @@ export async function jumpToMatch(searchQuery, option) {
         document,
         NodeFilter.SHOW_TEXT,
         null,
-        false,
     )
     const nodes = []
     let node
@@ -226,12 +225,12 @@ export async function jumpToMatch(searchQuery, option) {
         throw new Error("Pattern not found: " + searchQuery)
     }
     lastHighlights.sort(
-        option["reverse"] ? (a, b) => b.top - a.top : (a, b) => a.top - b.top,
+        option.reverse ? (a, b) => b.top - a.top : (a, b) => a.top - b.top,
     )
 
     if ("jumpTo" in option) {
         selected =
-            (option["jumpTo"] + lastHighlights.length) % lastHighlights.length
+            (option.jumpTo + lastHighlights.length) % lastHighlights.length
         focusHighlight(selected)
         return
     }
@@ -301,7 +300,7 @@ export async function jumpToNextMatch(n: number, searchFromView = false) {
         const length = lastHighlights.length
         const reverse = lastHighlights[length - 1].top < lastHighlights[0].top
         const negative = n < 0
-        const downward = (!reverse && !negative) || (reverse && negative)
+        const downward = !reverse && !negative || reverse && negative
         const yOffset = window.pageYOffset + (downward ? 0 : window.innerHeight)
         const start = negative ? length - 1 : 0
         const increment = negative ? -1 : 1
