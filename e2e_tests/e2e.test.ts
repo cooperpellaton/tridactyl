@@ -1,14 +1,11 @@
 import "geckodriver"
 
 import * as process from "process"
-const env = process.env
 import * as fs from "fs"
 import * as os from "os"
 import * as path from "path"
-import * as webdriver from "selenium-webdriver"
-import * as Until from "selenium-webdriver/lib/until"
-const {By} = webdriver
-import {Options} from "selenium-webdriver/firefox"
+import {WebDriver, Builder, By, Browser, until} from "selenium-webdriver"
+import {Options, Driver} from "selenium-webdriver/firefox"
 
 import { getNewestFileIn, sendKeys } from "./utils";
 
@@ -20,8 +17,8 @@ jest.setTimeout(100000)
 
 describe("webdriver", () => {
 
-    function iframeLoaded(driver) {
-        return driver.wait(Until.elementLocated(By.id("cmdline_iframe")))
+    async function iframeLoaded(driver: WebDriver) {
+        return driver.wait(until.elementLocated(By.xpath(`//*[@id="cmdline_iframe"]`)), 10000)
     }
 
     async function getDriver() {
@@ -30,16 +27,15 @@ describe("webdriver", () => {
             throw new Error("Couldn't find extension path");
         }
 
-        const options = (new Options())
-                .setPreference("xpinstall.signatures.required", false)
-                .addExtensions(extensionPath)
-        if (env["HEADLESS"]) {
-            options.headless();
+        const options = (new Options());
+        if (process.env.headless) {
+            options.addArguments("--headless");
         }
-        const driver = new webdriver.Builder()
-            .forBrowser("firefox")
+        const driver = new Builder()
+            .forBrowser(Browser.FIREFOX)
             .setFirefoxOptions(options)
-            .build()
+            .build() as unknown as Driver
+        driver.installAddon(extensionPath, true)
         // Wait until addon is loaded and :tutor is displayed
         await iframeLoaded(driver)
         // And wait a bit more otherwise Tridactyl won't be happy
@@ -144,7 +140,7 @@ describe("webdriver", () => {
             // Then, make sure rsscmd is executed and has the right arguments
             await sendKeys(driver, "<Tab><CR>")
             await (driver.switchTo() as any).parentFrame()
-            const elem = await driver.wait(Until.elementLocated(By.id("rsscmdExecuted")))
+            const elem = await driver.wait(until.elementLocated(By.id("rsscmdExecuted")))
             expect(url).toMatch(await elem.getAttribute("innerText"))
         } catch (e) {
             fail(e)
