@@ -1,32 +1,32 @@
-import * as fs from "fs"
+import * as fs from "fs/promises"
 import * as path from "path"
 import * as webdriver from "selenium-webdriver"
 
 // Returns the path of the newest file in directory
-export async function getNewestFileIn(directory: string) {
-        // Get list of files
-        const names = ((await new Promise((resolve, reject) => {
-                fs.readdir(directory, (err: Error, filenames: string[]) => {
-                        if (err) {
-                                return reject(err)
-                        }
-                        return resolve(filenames)
-                })
-                // Keep only files matching pattern
-        })) as string[])
-        // Get their stat struct
-        const stats = await Promise.all(names.map(name => new Promise((resolve, reject) => {
-                const fpath = path.join(directory, name)
-                fs.stat(fpath, (err: any, stats) => {
-                        if (err) {
-                                reject(err)
-                        }
-                        (stats as any).path = fpath
-                        return resolve(stats)
-                })
-        })))
-        // Sort by most recent and keep first
-        return ((stats.sort((stat1: any, stat2: any) => stat2.mtime - stat1.mtime)[0] || {}) as any).path
+export async function getNewestFileIn(directory: string): Promise<string | undefined> {
+    try {
+        const files = await fs.readdir(directory);
+
+        if (files.length === 0) return undefined;
+
+        let newestFile = files[0];
+        let newestTime = (await fs.stat(path.join(directory, newestFile))).mtime.getTime();
+
+        for (let i = 1; i < files.length; i++) {
+            const filePath = path.join(directory, files[i]);
+            const stat = await fs.stat(filePath);
+
+            if (stat.mtime.getTime() > newestTime) {
+                newestFile = files[i];
+                newestTime = stat.mtime.getTime();
+            }
+        }
+
+        return path.join(directory, newestFile);
+    } catch (error) {
+        console.error('Error getting newest file:', error);
+        return undefined;
+    }
 }
 
 const vimToSelenium = {

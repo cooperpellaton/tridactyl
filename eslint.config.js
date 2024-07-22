@@ -11,6 +11,19 @@ const preferArrow = require("eslint-plugin-prefer-arrow")
 const unsupportedApis = require("./custom-eslint-rules/eslint-plugin-unsupported-apis")
 
 module.exports = [
+    {
+        ignores: [
+            "node_modules/",
+            "build/",
+            "coverage/",
+            "compiler/",
+            "custom-eslint-rules/",
+            "**/.*.generated.ts",
+            "*.config.js",
+            "vendor/",
+            "scripts/"
+        ],
+    },
     eslintConfigPrettier,
     ...tseslint.configs.recommended,
     { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
@@ -32,7 +45,7 @@ module.exports = [
                     max: 200,
                 },
             ],
-            "max-params": "warn",
+            "max-params": "off",
             "no-bitwise": "error",
             "no-caller": "error",
             "no-cond-assign": "error",
@@ -72,19 +85,6 @@ module.exports = [
             "use-isnan": "error",
             "valid-typeof": "off",
         },
-    },
-    {
-        ignores: [
-            "node_modules/",
-            "build/",
-            "coverage/",
-            "*.test.ts",
-            "test_utils.ts",
-            "e2e_tests/",
-            "compiler/",
-            "**/.*.generated.ts",
-            "vendor/",
-        ],
     },
     {
         plugins: {
@@ -128,10 +128,10 @@ module.exports = [
         },
         languageOptions: {
             parserOptions: {
-                project: true,
-                tsconfigRootDir: __dirname,
+                project: "./tsconfig.json",
             },
         },
+        files: ["**/*.ts", "**/*.tsx"],
         rules: {
             "@typescript-eslint/adjacent-overload-signatures": "error",
             "@typescript-eslint/array-type": "off",
@@ -262,7 +262,6 @@ module.exports = [
         rules: {
             "stylistic/arrow-parens": ["off", "always"],
             "stylistic/comma-dangle": "off",
-
             "stylistic/indent": "off",
             "stylistic/max-len": "off",
             "stylistic/new-parens": "error",

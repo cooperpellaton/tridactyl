@@ -103,8 +103,8 @@ describe("webdriver", () => {
             lastAccessed: 0, // lastAccessed has also changed for the previously-active tab
         }
         for (let i = 0; i < tabsBefore.length; ++i) {
-            let copy1 = Object.assign({}, tabsBefore[i], ignoreValues)
-            let copy2 = Object.assign({}, notNewTabs[i], ignoreValues)
+            const copy1 = Object.assign({}, tabsBefore[i], ignoreValues)
+            const copy2 = Object.assign({}, notNewTabs[i], ignoreValues)
             expect(copy1).toEqual(copy2)
         }
         return [newtab, result]

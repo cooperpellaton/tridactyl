@@ -3,7 +3,7 @@
 import * as UrlUtil from "@src/lib/url_util"
 
 function test_increment() {
-    let cases = [
+    const cases = [
         // simple increment
         [1, "http://example.com/item/1", "http://example.com/item/2"],
         // test non-1 increment
@@ -18,14 +18,14 @@ function test_increment() {
         [1, "http://example.com", null],
     ]
 
-    for (let [step, input, output] of cases) {
+    for (const [step, input, output] of cases) {
         test(`${input} + ${step} --> ${output}`, () =>
             expect(UrlUtil.incrementUrl(input, step)).toEqual(output))
     }
 }
 
 function test_root() {
-    let cases = [
+    const cases = [
         // simple URL
         ["http://example.com/dir/page.html", "http://example.com/"],
         // already root, with subdir
@@ -34,8 +34,8 @@ function test_root() {
         ["about:config", null],
     ]
 
-    for (let [url, exp_root] of cases) {
-        let root = UrlUtil.getUrlRoot(new URL(url))
+    for (const [url, exp_root] of cases) {
+        const root = UrlUtil.getUrlRoot(new URL(url))
 
         test(`root of ${url} --> ${exp_root}`, () =>
             expect(root ? root.href : root).toEqual(exp_root))
@@ -43,7 +43,7 @@ function test_root() {
 }
 
 function test_parent() {
-    let cases = [
+    const cases = [
         // root URL, nothing to do!
         ["http://example.com", null],
         // URL with query string
@@ -73,8 +73,8 @@ function test_parent() {
         ["http://example.com//path//", "http://example.com//"],
     ]
 
-    for (let [url, exp_parent] of cases) {
-        let parent = UrlUtil.getUrlParent(new URL(url), {trailingSlash: true})
+    for (const [url, exp_parent] of cases) {
+        const parent = UrlUtil.getUrlParent(new URL(url), {trailingSlash: true})
 
         test(`parent of ${url} --> ${exp_parent}`, () =>
             expect(parent ? parent.href : parent).toEqual(exp_parent))
@@ -124,7 +124,7 @@ function test_parent_with_slash_strip() {
 }
 
 function test_download_filename() {
-    let cases = [
+    const cases = [
         // simple domain only
         ["http://example.com", "example.com"],
         ["http://example.com/", "example.com"],
@@ -156,8 +156,8 @@ function test_download_filename() {
         ["data:something/wierd,data", "data"],
     ]
 
-    for (let [url, exp_fn] of cases) {
-        let fn = UrlUtil.getDownloadFilenameForUrl(new URL(url))
+    for (const [url, exp_fn] of cases) {
+        const fn = UrlUtil.getDownloadFilenameForUrl(new URL(url))
 
         test(`filename for ${url} --> ${exp_fn}`, () =>
             expect(fn).toEqual(exp_fn))
@@ -165,7 +165,7 @@ function test_download_filename() {
 }
 
 function test_query_delete() {
-    let cases = [
+    const cases = [
         // no query
         ["http://example.com/", "query", "http://example.com/"],
         // single query=val, removed
@@ -201,8 +201,8 @@ function test_query_delete() {
         ],
     ]
 
-    for (let [url, q, exp_res] of cases) {
-        let modified = UrlUtil.deleteQuery(new URL(url), q)
+    for (const [url, q, exp_res] of cases) {
+        const modified = UrlUtil.deleteQuery(new URL(url), q)
 
         test(`delete query ${q} of ${url} --> ${exp_res}`, () =>
             expect(modified.href).toEqual(exp_res))
@@ -210,7 +210,7 @@ function test_query_delete() {
 }
 
 function test_query_replace() {
-    let cases = [
+    const cases = [
         // no query
         ["http://example.com/", "query", "val", "http://example.com/"],
         // single query
@@ -243,8 +243,8 @@ function test_query_replace() {
         ],
     ]
 
-    for (let [url, q, v, exp_res] of cases) {
-        let modified = UrlUtil.replaceQueryValue(new URL(url), q, v)
+    for (const [url, q, v, exp_res] of cases) {
+        const modified = UrlUtil.replaceQueryValue(new URL(url), q, v)
 
         test(`change query ${q} of ${url} --> ${exp_res}`, () =>
             expect(modified.href).toEqual(exp_res))
@@ -252,7 +252,7 @@ function test_query_replace() {
 }
 
 function test_url_graft_path() {
-    let cases = [
+    const cases = [
         // FROM LEFT
         [
             // complete replacement
@@ -316,8 +316,8 @@ function test_url_graft_path() {
         ],
     ]
 
-    for (let [url, level, tail, exp_res] of cases) {
-        let modified = UrlUtil.graftUrlPath(new URL(url), tail, Number(level))
+    for (const [url, level, tail, exp_res] of cases) {
+        const modified = UrlUtil.graftUrlPath(new URL(url), tail, Number(level))
 
         test(`graft ${tail} onto ${url} at level ${level} --> ${exp_res}`, () =>
             expect(modified ? modified.href : modified).toEqual(exp_res))
@@ -325,7 +325,7 @@ function test_url_graft_path() {
 }
 
 function test_url_query_interpolation() {
-    let cases = [
+    const cases = [
         [
             // not percent-encoded and appended
             "http://example.com",
@@ -362,8 +362,8 @@ function test_url_query_interpolation() {
         ]
     ]
 
-    for (let [url, qy, exp_res] of cases) {
-        let modified = UrlUtil.interpolateSearchItem(new URL(url), qy)
+    for (const [url, qy, exp_res] of cases) {
+        const modified = UrlUtil.interpolateSearchItem(new URL(url), qy)
 
         test(`interpolate ${qy} into ${url} --> ${exp_res}`, () =>
             expect(modified.href).toEqual(exp_res))
