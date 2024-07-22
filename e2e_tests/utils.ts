@@ -53,32 +53,39 @@ const modToSelenium = {
     "S": webdriver.Key.SHIFT,
 }
 
-export function sendKeys (driver, keys) {
+export function sendKeys (driver: webdriver.WebDriver, keys: string) {
     const delay = 500
-    function chainRegularKeys (previousPromise, regularKeys) {
-        return regularKeys
-            .split("")
-            .reduce((p, key) => p
-                .then(() => driver.actions().sendKeys(key).perform())
-                .then(() => driver.sleep(delay))
-                , previousPromise)
+    async function chainRegularKeys(previousPromise: Promise<void>, regularKeys: string) {
+        await previousPromise;
+    
+        for (const key of regularKeys) {
+            await driver.actions().sendKeys(key).perform();
+            await driver.sleep(delay);
+        }
     }
-    function chainSpecialKey (previousPromise, specialKey) {
-        return previousPromise
-            .then(() => {
-                const noBrackets = specialKey.slice(1,-1)
-                if (noBrackets.includes("-")) {
-                    const [modifiers, key] = noBrackets.split("-")
-                    const mods = modifiers.split("").map(mod => modToSelenium[mod])
-                    return mods
-                        .reduce((actions, mod) => actions.keyUp(mod),
-                            mods.reduce((actions, mod) => actions.keyDown(mod), driver.actions())
-                            .sendKeys(vimToSelenium[key] || key))
-                        .perform()
-                }
-                return driver.actions().sendKeys(vimToSelenium[noBrackets] || noBrackets).perform()
-            })
-            .then(() => driver.sleep(delay))
+
+    async function chainSpecialKey(previousPromise: Promise<any>, specialKey: string) {
+        await previousPromise;
+    
+        const noBrackets = specialKey.slice(1, -1);
+        if (noBrackets.includes("-")) {
+            const [modifiers, key] = noBrackets.split("-");
+            const mods = modifiers.split("").map(mod => modToSelenium[mod]);
+            
+            const actions = driver.actions();
+            for (const mod of mods) {
+                await actions.keyDown(mod);
+            }
+            await actions.sendKeys(vimToSelenium[key] || key);
+            for (const mod of mods.reverse()) {
+                await actions.keyUp(mod);
+            }
+            await actions.perform();
+        } else {
+            await driver.actions().sendKeys(vimToSelenium[noBrackets] || noBrackets).perform();
+        }
+    
+        await driver.sleep(delay);
     }
     keys = keys.replace(":", "<S-;>")
     let result = Promise.resolve()
@@ -88,19 +95,15 @@ export function sendKeys (driver, keys) {
         return chainRegularKeys(result, keys)
     }
     const regularKeys = keys.split(regexp)
-    let i
-    for (i = 0; i < Math.min(specialKeys.length, regularKeys.length); ++i) {
-        result = chainSpecialKey(chainRegularKeys(result, regularKeys[i]), specialKeys[i])
+    // Process pairs of regular and special keys
+    for (let i = 0; i < Math.max(regularKeys.length, specialKeys.length); i++) {
+        if (regularKeys[i]) {
+            result = chainRegularKeys(result, regularKeys[i]);
+        }
+        if (specialKeys[i]) {
+            result = chainSpecialKey(result, specialKeys[i]);
+        }
     }
-    if (i < regularKeys.length) {
-        result = regularKeys
-            .slice(i)
-            .reduce((previousPromise, currentKeys) => chainRegularKeys(previousPromise, currentKeys), result)
-    }
-    if ( i < specialKeys.length) {
-        result = specialKeys
-            .slice(i)
-            .reduce((previousPromise, currentKey) => chainSpecialKey(previousPromise, currentKey), result)
-    }
-    return result
+
+    return result;
 }
