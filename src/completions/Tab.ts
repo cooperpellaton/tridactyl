@@ -8,7 +8,8 @@ import * as Messaging from "@src/lib/messaging"
 
 class BufferCompletionOption
     extends Completions.CompletionOptionHTML
-    implements Completions.CompletionOptionFuse {
+    implements Completions.CompletionOptionFuse
+{
     public fuseKeys = []
     public tabId: number
 
@@ -218,7 +219,7 @@ export class BufferCompletionSource extends Completions.CompletionSourceFuse {
     }
 
     // Eslint doesn't like this decorator but there's nothing we can do about it
-    // eslint-disable-next-line @typescript-eslint/member-ordering
+
     @Perf.measuredAsync
     private async updateOptions(exstr = "") {
         this.lastExstr = exstr

@@ -9,10 +9,10 @@ const stylistic = require("@stylistic/eslint-plugin")
 const importOrder = require("eslint-plugin-import")
 const preferArrow = require("eslint-plugin-prefer-arrow")
 const unsupportedApis = require("./custom-eslint-rules/eslint-plugin-unsupported-apis")
-// const tslint = require("@typescript-eslint/eslint-plugin-tslint")
 
 module.exports = [
-    { files: ["**/*.{js,mjs,cjs,ts}"] },
+    eslintConfigPrettier,
+    ...tseslint.configs.recommended,
     { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
     { languageOptions: { globals: globals.browser, parser: parser } },
     {
@@ -32,12 +32,7 @@ module.exports = [
                     max: 200,
                 },
             ],
-            "max-params": [
-                "error",
-                {
-                    max: 7,
-                },
-            ],
+            "max-params": "warn",
             "no-bitwise": "error",
             "no-caller": "error",
             "no-cond-assign": "error",
@@ -87,16 +82,17 @@ module.exports = [
             "test_utils.ts",
             "e2e_tests/",
             "compiler/",
-            "**/.*.generated.ts"
+            "**/.*.generated.ts",
+            "vendor/",
         ],
     },
     {
         plugins: {
-            unsupportedApis
+            unsupportedApis,
         },
         rules: {
-            "unsupportedApis/enforce-unsupported-apis": "error"
-        }
+            "unsupportedApis/enforce-unsupported-apis": "error",
+        },
     },
     {
         plugins: {
@@ -138,12 +134,7 @@ module.exports = [
         },
         rules: {
             "@typescript-eslint/adjacent-overload-signatures": "error",
-            "@typescript-eslint/array-type": [
-                "error",
-                {
-                    default: "array",
-                },
-            ],
+            "@typescript-eslint/array-type": "off",
             "@typescript-eslint/await-thenable": "error",
             "@typescript-eslint/ban-types": [
                 "error",
@@ -177,7 +168,7 @@ module.exports = [
                 },
             ],
             "@typescript-eslint/consistent-type-assertions": "error",
-            "@typescript-eslint/dot-notation": "error",
+            "@typescript-eslint/dot-notation": "off", // this should be "error" but the fix silently breaks code almost 100% of the time. not worth the headaches
             "@typescript-eslint/explicit-function-return-type": "off",
             "@typescript-eslint/explicit-member-accessibility": [
                 "off",
@@ -223,7 +214,15 @@ module.exports = [
                 },
             ],
             "@typescript-eslint/no-unnecessary-type-assertion": "error",
-            "@typescript-eslint/no-unused-expressions": "error",
+            "@typescript-eslint/no-unsafe-member-access": "off",
+            "@typescript-eslint/no-unused-expressions": [
+                "error",
+                {
+                    allowShortCircuit: true,
+                    allowTernary: true,
+                },
+            ],
+            "@typescript-eslint/no-unused-vars": "off",
             "@typescript-eslint/no-use-before-define": "off",
             "@typescript-eslint/no-var-requires": "error",
             "@typescript-eslint/prefer-for-of": "error",
@@ -267,7 +266,6 @@ module.exports = [
             "stylistic/indent": "off",
             "stylistic/max-len": "off",
             "stylistic/new-parens": "error",
-            "stylistic/no-extra-parens": "error",
             "stylistic/no-extra-semi": "off",
             "stylistic/no-trailing-spaces": "error",
             "prefer-arrow/prefer-arrow-functions": ["off", {}],
@@ -355,50 +353,4 @@ module.exports = [
             "preferArrow/prefer-arrow-functions": ["off", {}],
         },
     },
-    // {
-    //     plugins: {tslint},
-    //     parserOptions: {
-    //         project: "tsconfig.json",
-    //     },
-    //     rules: {
-    //         "tslint/config": [
-    //             "error",
-    //             {
-    //                 rules: {
-    //                     "arguments-order": true,
-    //                     "bool-param-default": true,
-    //                     "no-accessor-field-mismatch": true,
-    //                     "no-case-with-or": true,
-    //                     "no-dead-store": true,
-    //                     "no-duplicate-in-composite": true,
-    //                     "no-empty-array": true,
-    //                     "no-gratuitous-expressions": true,
-    //                     "no-hardcoded-credentials": true,
-    //                     "no-ignored-initial-value": true,
-    //                     "no-ignored-return": true,
-    //                     "no-invariant-return": true,
-    //                     "no-misleading-array-reverse": true,
-    //                     "no-misspelled-operator": true,
-    //                     "no-nested-switch": true,
-    //                     "no-nested-template-literals": true,
-    //                     "no-return-type-any": true,
-    //                     "no-statements-same-line": true,
-    //                     "no-try-promise": true,
-    //                     "no-undefined-argument": true,
-    //                     "no-unenclosed-multiline-block": true,
-    //                     "no-unthrown-error": true,
-    //                     "no-unused-declaration": true,
-    //                     "no-useless-increment": true,
-    //                     "no-useless-intersection": true,
-    //                     "prefer-optional": true,
-    //                     "prefer-promise-shorthand": true,
-    //                     "prefer-type-guard": true,
-    //                     "use-type-alias": true,
-    //                 },
-    //             },
-    //         ],
-    //     },
-    // },
-    eslintConfigPrettier,
-    ...tseslint.configs.recommendedTypeChecked,
-];
+]

@@ -60,7 +60,7 @@ main() {
 		mv "$tmpfile" "$file";;
 	    *)
 	      staged "$file" > "$tmpfile"
-	      eslint -c ../.eslintrc.js --fix -o /dev/null "$tmpfile" &&
+	      eslint --fix -o /dev/null "$tmpfile" &&
 		mv "$tmpfile" "$file";;
 	  esac
 	  chmod --reference="../$file" "$file" # match permissions

@@ -1771,7 +1771,7 @@ export const keyboardlayouts = {
         KeyY: ["", "!"],
     },
     workman: {
-        Quote: ["'", "\""],
+        Quote: ["'", '"'],
         Digit8: ["8", "*"],
         Digit1: ["1", "!"],
         Digit2: ["2", "@"],
@@ -1817,7 +1817,7 @@ export const keyboardlayouts = {
         KeyM: ["l", "L"],
         Comma: [",", "<"],
         Period: [".", ">"],
-        Slash: ["/", "?"]
+        Slash: ["/", "?"],
     },
 }
 
@@ -2018,7 +2018,7 @@ export async function getAsync(
  */
 export async function push() {
     const local_conf = await browser.storage.local.get(CONFIGNAME)
-    // eslint-disable-next-line @typescript-eslint/dot-notation
+
     delete local_conf[CONFIGNAME]["customthemes"]
     return browser.storage.sync.set(local_conf)
 }
@@ -2310,8 +2310,8 @@ export async function update() {
                 local?.storageloc !== undefined
                     ? local.storageloc
                     : sync?.storageloc !== undefined
-                    ? sync.storageloc
-                    : "sync"
+                      ? sync.storageloc
+                      : "sync"
             if (current_storageloc == "sync") {
                 await pull()
             } else if (current_storageloc != "local") {

@@ -11,4 +11,4 @@ if [ "$incompatible_sed" ]; then
 	printf "%s\n\n" "$incompatible_sed"
 fi
 yarn run lint
-"$(yarn bin)/eslint" --ext .ts .
+yarn run eslint

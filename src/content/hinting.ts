@@ -415,8 +415,8 @@ interface Hintables {
 export function hintElements(elements: Element[], option = {}) {
     const hintable = toHintablesArray(Array.from(elements))
     const rapid = option["rapid"] ?? false
-    const callback = typeof option["callback"] === "function" ?
-        option["callback"] : x => x
+    const callback =
+        typeof option["callback"] === "function" ? option["callback"] : x => x
     if (!rapid) {
         return new Promise((resolve, reject) => {
             hintPage(hintable, x => x, resolve, reject, rapid)
@@ -431,7 +431,7 @@ export function hintElements(elements: Element[], option = {}) {
         const key = Symbol("select-result")
         const hintCallback = element => {
             callback(element)
-            onSelect.resolve({[key]: element})
+            onSelect.resolve({ [key]: element })
             onSelect = deferCreate()
         }
         const wrap = async function* () {
@@ -443,8 +443,13 @@ export function hintElements(elements: Element[], option = {}) {
             }
         }
         const result = wrap()
-        hintPage(hintable, hintCallback,
-            endDefer.resolve, endDefer.reject, rapid)
+        hintPage(
+            hintable,
+            hintCallback,
+            endDefer.resolve,
+            endDefer.reject,
+            rapid,
+        )
         return result
     }
     function deferCreate() {
@@ -467,8 +472,8 @@ export function hintElements(elements: Element[], option = {}) {
 export function hintPage(
     hintableElements: Hintables[],
     onSelect: HintSelectedCallback,
-    resolve: (x?) => void = () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-    reject: (x?) => void = () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+    resolve: (x?) => void = () => {},
+    reject: (x?) => void = () => {},
     rapid = false,
 ) {
     reset() // Tidy up in case any previous hinting wasn't exited cleanly
@@ -627,7 +632,10 @@ function* hintnames_short(
     hintchars = defaultHintChars(),
 ): IterableIterator<string> {
     const source = hintnames_simple(hintchars)
-    const num2skip = Math.max(0, Math.ceil((n - hintchars.length) / (hintchars.length - 1)));
+    const num2skip = Math.max(
+        0,
+        Math.ceil((n - hintchars.length) / (hintchars.length - 1)),
+    )
     yield* islice(source, num2skip, n + num2skip)
 }
 
@@ -720,7 +728,7 @@ class Hint {
             rect.left + offsetLeft,
             rect.top + offsetTop,
             rect.width,
-            rect.height
+            rect.height,
         )
 
         this.flag.textContent = name

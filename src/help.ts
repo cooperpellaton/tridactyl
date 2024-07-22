@@ -90,7 +90,7 @@ async function addSetting(settingName: string) {
 }
 
 async function onExcmdPageLoad() {
-    browser.storage.onChanged.addListener((changes) => {
+    browser.storage.onChanged.addListener(changes => {
         if ("userconfig" in changes) {
             // JSON.stringify for comparisons like it's 2012
             ;[...modeMaps, "exaliases"].forEach(kind => {
@@ -106,7 +106,7 @@ async function onExcmdPageLoad() {
     await Promise.all([...modeMaps, "exaliases"].map(addSetting))
     // setCommandSetting() can change the height of nodes in the page so we need to scroll to the right place again
     if (document.location.hash) {
-        /* tslint:disable:no-self-assignment */
+        /* eslint-disable-next-line no-self-assign */
         document.location.hash = document.location.hash
     }
 }
@@ -175,7 +175,7 @@ function addSettingInputs() {
         ),
     ).then(_ => {
         if (document.location.hash) {
-            /* tslint:disable:no-self-assignment */
+            /* eslint-disable-next-line no-self-assign */
             document.location.hash = document.location.hash
         }
     })
@@ -219,7 +219,7 @@ addEventListener(
         }
 
         // If we're on a different help page we don't need any side-effects
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+
         return () => {}
     })(),
 )

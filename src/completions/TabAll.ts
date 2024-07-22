@@ -8,7 +8,8 @@ import { tabTgroup } from "@src/lib/tab_groups"
 
 class TabAllCompletionOption
     extends Completions.CompletionOptionHTML
-    implements Completions.CompletionOptionFuse {
+    implements Completions.CompletionOptionFuse
+{
     public fuseKeys = []
     public tab: browser.tabs.Tab
     constructor(
@@ -161,7 +162,7 @@ export class TabAllCompletionSource extends Completions.CompletionSourceFuse {
     // }
 
     // Eslint doesn't like this decorator but there's nothing we can do about it
-    // eslint-disable-next-line @typescript-eslint/member-ordering
+
     @Perf.measuredAsync
     private async updateOptions(exstr = "") {
         this.lastExstr = exstr
@@ -214,8 +215,7 @@ export class TabAllCompletionSource extends Completions.CompletionSourceFuse {
                     tab,
                     tab.index === altTab.index &&
                         tab.windowId === altTab.windowId,
-                    tab.active &&
-                        tab.windowId === currentWindow.id,
+                    tab.active && tab.windowId === currentWindow.id,
                     winindex,
                     await Containers.getFromId(tab.cookieStoreId),
                     windows[tab.windowId].incognito,
