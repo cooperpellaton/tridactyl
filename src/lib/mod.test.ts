@@ -5,7 +5,7 @@ import { euclid_mod, knuth_mod, my_mod } from "@src/lib/number.mod"
 expect.extend({
     /** Expect equal to all values in array */
     toBeAll(received, values: Array<any>) {
-        for (let val of values) {
+        for (const val of values) {
             if (received !== val) {
                 return {
                     message: () =>
@@ -35,7 +35,7 @@ const testcases = [
     [6, 3, 0],
 ]
 
-for (let [a, b, ans] of testcases) {
+for (const [a, b, ans] of testcases) {
     test(`${a} (mod ${b}) -- .mod`, () => expect(a.mod(b)).toEqual(ans))
     test(`${a} (mod ${b}) -- euclid`, () =>
         expect(euclid_mod(a, b)).toEqual(ans))
@@ -45,8 +45,8 @@ for (let [a, b, ans] of testcases) {
 
 /** Test with mixed dividend, positive divisor */
 for (let i = 0; i < 100; i++) {
-    let a = ((Math.random() - 0.5) * 10000) | 0
-    let b = (Math.random() * 10000) | 0
+    const a = Math.floor((Math.random() - 0.5) * 10000);
+    let b = Math.floor(Math.random() * 10000);
     b = b === 0 ? 17 : b // Don't be 0.
     test(`${a} (mod ${b}) -- equivalence check`, () =>
         expect(a.mod(b)).toBeAll([
@@ -58,8 +58,8 @@ for (let i = 0; i < 100; i++) {
 
 /** Test with a mix of +ve and -ve */
 for (let i = 0; i < 100; i++) {
-    let a = ((Math.random() - 0.5) * 10000) | 0
-    let b = ((Math.random() - 0.5) * 10000) | 0
+    const a = Math.floor((Math.random() - 0.5) * 10000);
+    let b = Math.floor((Math.random() - 0.5) * 10000);
     b = b === 0 ? 17 : b // Don't be 0.
     test(`${a} (mod ${b}) -- equivalence check`, () =>
         expect(a.mod(b)).toBeAll([my_mod(a, b), knuth_mod(a, b)]))

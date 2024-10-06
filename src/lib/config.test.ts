@@ -7,7 +7,7 @@ const config = new default_config()
 // todo: test subconfigs and platform_defaults
 const nmaps = Object.keys(config.nmaps)
 
-for (let mode of Object.keys(config).filter(x=>x.match(/maps$/))) {
+for (const mode of Object.keys(config).filter(x=>x.match(/maps$/))) {
     const mapstrings = Object.keys(config[mode])
     testAll(canonicaliseMapstr, zip(mapstrings, mapstrings))
 }

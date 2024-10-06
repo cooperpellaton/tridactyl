@@ -315,7 +315,7 @@ export abstract class CompletionSourceFuse extends CompletionSource {
         if (this.state !== "hidden") {
             // We're abusing `async` here to help us to catch errors in backoff
             // and to make it easier to return consistent types
-            /* eslint-disable-next-line @typescript-eslint/require-await */
+
             return backoff(async () => {
                 const visopts = this.options.filter(o => o.state !== "hidden")
                 const currind = visopts.findIndex(o => o.state === "focused")
@@ -332,7 +332,6 @@ export abstract class CompletionSourceFuse extends CompletionSource {
     /* abstract onUpdate(query: string, prefix: string, options: CompletionOptionFuse[]) */
 
     // Lots of methods don't need this but some do
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars-experimental
     async onInput(exstr: string) {}
 }
 

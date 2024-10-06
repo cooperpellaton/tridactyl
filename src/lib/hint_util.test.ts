@@ -45,6 +45,7 @@ expect.extend({
 
 // Add this type definition so Jest/TypeScript doesn't complain
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace jest {
         interface Matchers<R> {
             toMatchOptions(expected: any): CustomMatcherResult

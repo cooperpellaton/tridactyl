@@ -4,7 +4,8 @@ import * as providers from "@src/completions/providers"
 
 class HistoryCompletionOption
     extends Completions.CompletionOptionHTML
-    implements Completions.CompletionOptionFuse {
+    implements Completions.CompletionOptionFuse
+{
     public fuseKeys = []
 
     constructor(page: any, options: string) {
@@ -143,7 +144,7 @@ export class HistoryCompletionSource extends Completions.CompletionSourceFuse {
     }
 
     // We don't need this inherited function
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     updateChain() {}
 
     private async scoreOptions(query: string, n: number) {
