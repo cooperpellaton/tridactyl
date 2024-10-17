@@ -1,0 +1,37 @@
+name: lint
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - '/readme.md'
+  pull_request:
+    branches:
+      - '*'
+    paths-ignore:
+      - '/readme.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        step: [lint, unit, mozilla]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+    - name: Setup
+      run: bun install
+    - name: ${{ matrix.step }}
+      env:
+        STEP: ${{ matrix.step }}
+      run: bash -c ./ci/$STEP.sh
