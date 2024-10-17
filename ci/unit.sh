@@ -1,4 +1,4 @@
-#! /bin/sh
-cd "${0%/*}" || exit
+#!/usr/bin/env bash
+
 bun run build --no-native
 bunx jest src
