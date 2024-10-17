@@ -28,16 +28,6 @@ isWindowsMinGW() {
   printf "%s" "${is_mingw}"
 }
 
-if [ "$(isWindowsMinGW)" = "True" ]; then
-  WIN_PYTHON="py -3"
-  YARN_BIN_DIR="$(cygpath "$(yarn bin)")"
-  PATH=$YARN_BIN_DIR:$PATH
-else
-  PATH="$(yarn bin):$PATH"
-fi
-
-export PATH
-
 mkdir -p build
 mkdir -p build/static
 mkdir -p generated/static
@@ -54,12 +44,12 @@ fi
 if [ "$QUICK_BUILD" != "1" ]; then
 
     # .bracketexpr.generated.ts is needed for metadata generation
-    "$(yarn bin)/nearleyc" src/grammars/bracketexpr.ne > \
+    bunx nearleyc src/grammars/bracketexpr.ne > \
       src/grammars/.bracketexpr.generated.ts
 
     # It's important to generate the metadata before the documentation because
     # missing imports might break documentation generation on clean builds
-    "$(yarn bin)/tsc" compiler/gen_metadata.ts -m commonjs --target es2017 \
+    bunx tsc compiler/gen_metadata.ts -m commonjs --target es2017 \
       && node compiler/gen_metadata.js \
               --out src/.metadata.generated.ts \
               --themeDir src/static/themes \
@@ -113,5 +103,5 @@ scripts/authors.sh
 if [ -e "$CLEANSLATE" ] ; then
 	cp -v "$CLEANSLATE" build/static/css/cleanslate.css
 else
-	echo "Couldn't find cleanslate.css. Try running 'yarn install'"
+	echo "Couldn't find cleanslate.css. Try running 'bun install'"
 fi
