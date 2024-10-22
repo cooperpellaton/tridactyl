@@ -18,7 +18,6 @@
     "csp-serdes": "github:cmcaine/csp-serdes",
     "css": "^3.0.0",
     "editor-adapter": "^0.0.5",
-    "esbuild": "^0.20.2",
     "fuse.js": "^7.0.0",
     "nearley": "^2.20.1",
     "ramda": "^0.29.1",
@@ -31,6 +30,7 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
+    "@types/command-line-args": "^5.2.3",
     "@types/css": "0.0.37",
     "@types/firefox-webext-browser": "^120.0.2",
     "@types/jest": "^27.5.0",
@@ -39,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/eslint-plugin-tslint": "^6.21.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "command-line-args": "^5.2.1",
+    "command-line-args": "^6.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.0",

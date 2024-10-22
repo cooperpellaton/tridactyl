@@ -50,7 +50,7 @@ if [ "$QUICK_BUILD" != "1" ]; then
     # It's important to generate the metadata before the documentation because
     # missing imports might break documentation generation on clean builds
     bunx tsc compiler/gen_metadata.ts -m commonjs --target es2017 \
-      && node compiler/gen_metadata.js \
+      && bun run compiler/gen_metadata.js \
               --out src/.metadata.generated.ts \
               --themeDir src/static/themes \
               src/excmds.ts src/lib/config.ts
@@ -59,7 +59,7 @@ if [ "$QUICK_BUILD" != "1" ]; then
     scripts/make_tutorial.sh
     scripts/make_docs.sh
 
-    tsc --project tsconfig.json --noEmit
+    bunx tsc --project tsconfig.json --noEmit
 else
 
     echo "Warning: dirty rebuild. Skipping docs, metadata and type checking..."
@@ -69,7 +69,7 @@ fi
 # Actually build the thing
 
 mkdir -p buildtemp
-node scripts/esbuild.js
+bun scripts/build.js
 mv buildtemp/* build/
 rmdir buildtemp
 
