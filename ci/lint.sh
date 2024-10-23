@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [ "$(which shellcheck)" ]; then
     GLOBIGNORE="node_modules" shellcheck -e2012 ./**/*.sh
