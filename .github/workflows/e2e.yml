@@ -69,4 +69,7 @@ jobs:
         retry_wait_seconds: 10
         shell: bash
         command: |
-          bun run clean && bun run build --old-native && bun make-zip && bun jest
+          bun run clean 
+          bun run build --old-native
+          bun make-zip 
+          bun jest
