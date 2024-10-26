@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# Strict mode configuration
-set -euo pipefail
-IFS=$'\n\t'
-trap 'echo "Error: Command failed at line $LINENO"' ERR
-
 # Default configuration
 declare -A CONFIG=(
   [QUICK_BUILD]=0
