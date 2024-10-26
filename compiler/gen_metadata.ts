@@ -1,8 +1,8 @@
-import commandLineArgs from "command-line-args"
-import * as fs from "fs"
 import ts from "typescript"
-import * as AllMetadata from "./metadata/AllMetadata"
+import * as fs from "fs"
+import commandLineArgs from "command-line-args"
 import * as AllTypes from "./types/AllTypes"
+import * as AllMetadata from "./metadata/AllMetadata"
 
 export function toSimpleType(typeNode) {
     switch (typeNode.kind) {
