@@ -125,7 +125,7 @@ perform_full_build() {
 
 build_main_application() {
   ensure_directory_exists "${CONFIG[TEMP_DIR]}"
-  bun scripts/build.js
+  bun scripts/esbuild.js
   mv "${CONFIG[TEMP_DIR]}"/* "${CONFIG[BUILD_DIR]}/"
   rmdir "${CONFIG[TEMP_DIR]}"
 }
