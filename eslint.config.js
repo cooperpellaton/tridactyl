@@ -3,6 +3,7 @@ import tsPlugin from "@typescript-eslint/eslint-plugin"
 import jsdoc from "eslint-plugin-jsdoc"
 import sonarjs from "eslint-plugin-sonarjs"
 import tseslint from "typescript-eslint"
+import eslintConfigPrettier from "eslint-config-prettier"
 
 export default [
     {
@@ -15,9 +16,13 @@ export default [
             "test_utils.ts",
             "e2e_tests/",
             "compiler/",
+            "generated/",
+            "**/.*.generated.ts",
+            "src/static/typedoc/**/*.js",
         ],
     },
     eslint.configs.recommended,
+    eslintConfigPrettier,
     ...tseslint.configs.recommended,
     {
         rules: {
@@ -89,7 +94,7 @@ export default [
                 projectService: true,
                 sourceType: "module",
                 ecmaVersion: 2020,
-                tsConfigRootDir: __dirname,
+                // tsConfigRootDir: __dirname,
             },
         },
         rules: {

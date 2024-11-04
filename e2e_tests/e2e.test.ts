@@ -11,7 +11,7 @@ import {
     sendKeys,
 } from "./utils"
 
-jest.setTimeout(100000)
+jest.setTimeout(10000)
 
 // API docs because I waste too much time looking for them every time I go back to this:
 // https://seleniumhq.github.io/selenium/docs/api/javascript/
