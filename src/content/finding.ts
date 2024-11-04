@@ -199,7 +199,6 @@ export async function jumpToMatch(searchQuery, option) {
         document,
         NodeFilter.SHOW_TEXT,
         null,
-        false,
     )
     const nodes = []
     let node
@@ -226,12 +225,12 @@ export async function jumpToMatch(searchQuery, option) {
         throw new Error("Pattern not found: " + searchQuery)
     }
     lastHighlights.sort(
-        option["reverse"] ? (a, b) => b.top - a.top : (a, b) => a.top - b.top,
+        option.reverse ? (a, b) => b.top - a.top : (a, b) => a.top - b.top,
     )
 
     if ("jumpTo" in option) {
         selected =
-            (option["jumpTo"] + lastHighlights.length) % lastHighlights.length
+            (option.jumpTo + lastHighlights.length) % lastHighlights.length
         focusHighlight(selected)
         return
     }

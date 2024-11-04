@@ -678,7 +678,7 @@ type HintSelectedCallback = (x: any) => any
 @hidden */
 class Hint {
     public readonly flag = document.createElement("span")
-    public readonly rect: ClientRect = null
+    public readonly rect: DOMRect = null
     public result: any = null
 
     public width = 0
@@ -708,22 +708,22 @@ class Hint {
 
         // Find the first visible client rect of the target
         const clientRects = target.getClientRects()
-        let rect = clientRects[0]
-        for (const recti of clientRects) {
-            if (recti.bottom + offsetTop > 0 && recti.right + offsetLeft > 0) {
-                rect = recti
+        let targetRect = clientRects[0]
+
+        // Find the first visible rectangle
+        for (const rect of clientRects) {
+            if (rect.bottom + offsetTop > 0 && rect.right + offsetLeft > 0) {
+                targetRect = rect
                 break
             }
         }
 
-        this.rect = {
-            top: rect.top + offsetTop,
-            bottom: rect.bottom + offsetTop,
-            left: rect.left + offsetLeft,
-            right: rect.right + offsetLeft,
-            width: rect.width,
-            height: rect.height,
-        }
+        this.rect = new DOMRect(
+            targetRect.left + offsetLeft,
+            targetRect.top + offsetTop,
+            targetRect.width,
+            targetRect.height
+        )
 
         this.flag.textContent = name
         this.flag.className = "TridactylHint"
@@ -733,8 +733,8 @@ class Hint {
         this.flag.classList.add("TridactylHint" + target.tagName)
         classes?.forEach(f => this.flag.classList.add(f))
 
-        const top = rect.top > 0 ? this.rect.top : offsetTop + pad
-        const left = rect.left > 0 ? this.rect.left : offsetLeft + pad
+        const top = targetRect.top > 0 ? this.rect.top : offsetTop + pad
+        const left = targetRect.left > 0 ? this.rect.left : offsetLeft + pad
         this.x = window.scrollX + left
         this.y = window.scrollY + top
 

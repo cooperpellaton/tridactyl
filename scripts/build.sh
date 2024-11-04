@@ -103,7 +103,7 @@ perform_full_build() {
   bunx nearleyc src/grammars/bracketexpr.ne >src/grammars/.bracketexpr.generated.ts
 
   # Generate metadata
-  bunx tsc compiler/gen_metadata.ts -m commonjs --target es2017 &&
+  bunx tsc compiler/gen_metadata.ts -m commonjs --target es2017 --skipLibCheck &&
     bun run compiler/gen_metadata.js \
       --out src/.metadata.generated.ts \
       --themeDir src/static/themes \
