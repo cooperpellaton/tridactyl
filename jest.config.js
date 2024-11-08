@@ -1,5 +1,6 @@
-const tsConfig = require("./tsconfig")
+const { compilerOptions } = require("./tsconfig")
 
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
     testEnvironment: "jsdom",
     setupFiles: ["jest-webextension-mock"],
@@ -13,7 +14,7 @@ module.exports = {
             "ts-jest",
             {
                 tsconfig: {
-                    ...tsConfig.compilerOptions,
+                    ...compilerOptions,
                     types: [
                         "@types/jest",
                         "node",
