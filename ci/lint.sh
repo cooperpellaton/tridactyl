@@ -17,4 +17,4 @@ fi
 
 # Run linting tools with proper error handling
 bun lint || { echo "Error running lint; exiting"; exit 1; }
-bunx eslint --rulesdir custom-eslint-rules --ext .ts .
+bunx eslint
