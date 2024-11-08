@@ -5813,7 +5813,7 @@ async function js_helper(str: string[]) {
         if (flag == "-p") {
             // arg of -p comes from the end of str[]
             // and we don't know if the user will use it or not
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
             JS_ARG = str.pop()
             str.shift()
             continue
@@ -5845,7 +5845,7 @@ async function js_helper(str: string[]) {
 
     if (separator !== null) {
         // user may or may not use JS_ARGS
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         JS_ARGS = str.join(" ").split(separator)[1].split(" ")
         jsContent = str.join(" ").split(separator)[0]
     } else {

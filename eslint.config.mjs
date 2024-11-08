@@ -1,17 +1,18 @@
 import eslint from "@eslint/js"
 import tsPlugin from "@typescript-eslint/eslint-plugin"
+import eslintConfigPrettier from "eslint-config-prettier"
 import jsdoc from "eslint-plugin-jsdoc"
 import sonarjs from "eslint-plugin-sonarjs"
+import globals from "globals"
 import tseslint from "typescript-eslint"
-import eslintConfigPrettier from "eslint-config-prettier"
 
 export default [
     {
         ignores: [
             "**/dist/*",
             "**/node_modules/*",
-            "eslint.config.mjs",
-            "jest.config.js",
+            "*.config.mjs",
+            "*.config.js",
             "scripts/",
             "build",
             "coverage",
@@ -30,6 +31,11 @@ export default [
     eslintConfigPrettier,
     ...tseslint.configs.recommendedTypeChecked,
     {
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+            },
+        },
         rules: {
             // General ESLint rules
             "arrow-parens": "off",
@@ -205,7 +211,7 @@ export default [
             "@typescript-eslint/typedef": "off",
             "@typescript-eslint/unified-signatures": "error",
             "@typescript-eslint/restrict-template-expressions": "warn",
-            "@typescript-eslint/restrict-plus-operands": "warn"
+            "@typescript-eslint/restrict-plus-operands": "warn",
         },
     },
     {

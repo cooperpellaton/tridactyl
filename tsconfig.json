@@ -12,6 +12,8 @@
     "experimentalDecorators": true,
     "alwaysStrict": true,
     "strictBindCallApply": true,
+    "allowJs": true,
+    "checkJs": false,
     "noImplicitThis": true,
     "strictFunctionTypes": true,
     "baseUrl": "src/",
@@ -24,11 +26,11 @@
     "jsxFragmentFactory": "JSX.Fragment"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
   ],
   "exclude": [
       "src/**/*.test.ts",
-      "src/lib/test_utils.ts"
+      "src/lib/test_utils.ts",
   ],
   "typeDocOptions": {
     "plugin": "src/static/typedoc/theme.js",

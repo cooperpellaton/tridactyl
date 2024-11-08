@@ -466,7 +466,7 @@
                                                 "data:image/jpeg;base64",
                                                 "data:image/x-icon;base64",
                                                 // NB: THIS V COULD BE DANGEROUS
-                                                "data:image/svg+xml;base64", 
+                                                "data:image/svg+xml;base64",
                                                 // NB: THIS ^ COULD BE DANGEROUS
                                             ]
                                             // If substitutionValue doesn't start with any of the authorized protocols
