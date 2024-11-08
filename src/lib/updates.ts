@@ -6,7 +6,7 @@
 
  */
 
-import SemverCompare from "semver-compare"
+import { compareVersions } from "compare-versions"
 import * as Config from "@src/lib/config"
 import * as Logging from "@src/lib/logging"
 import { getTriVersion } from "@src/lib/webext"
@@ -62,7 +62,7 @@ export function shouldNagForVersion(version: TriVersionFeedItem) {
     const timeSinceRelease = (Date.now() - version.releaseDate.getTime()) / 1000
     const updateNagWaitSeconds = Config.get("update", "nagwait") * 24 * 60 * 60
     const newerThanInstalled =
-        SemverCompare(version.version, getInstalledPatchVersion()) > 0
+        compareVersions(version.version, getInstalledPatchVersion()) > 0
 
     return newerThanInstalled && timeSinceRelease > updateNagWaitSeconds
 }
@@ -72,7 +72,7 @@ export function naggedForVersion(version: TriVersionFeedItem) {
     if (lastNaggedVersion) {
         // If the version is <= the last nagged version, we've already
         // nagged for it.
-        return SemverCompare(version.version, lastNaggedVersion) <= 0
+        return compareVersions(version.version, lastNaggedVersion) <= 0
     } else {
         return false
     }
