@@ -185,7 +185,7 @@ export class AutoContain implements IAutoContain {
     // Clear the cancelled requests.
     clearCancelledRequests = (tabId: number): void => {
         if (this.cancelledRequests[tabId]) {
-            delete this.cancelledRequests[tabId]
+            this.cancelledRequests.splice(tabId, 1);
         }
     }
 

@@ -2927,7 +2927,7 @@ export function tabqueue(...addresses: string[]) {
     @hidden
 */
 //#background_helper
-async function idFromIndex(index?: number | "%" | "#" | string): Promise<number> {
+async function idFromIndex(index?: number | string): Promise<number> {
     return (await tabFromIndex(index)).id
 }
 
@@ -2937,7 +2937,7 @@ async function idFromIndex(index?: number | "%" | "#" | string): Promise<number>
  * @hidden
  */
 //#background_helper
-async function tabFromIndex(index?: number | "%" | "#" | string): Promise<browser.tabs.Tab> {
+async function tabFromIndex(index?: number | string): Promise<browser.tabs.Tab> {
     if (index === "#") {
         // Support magic previous/current tab syntax everywhere
         return prevActiveTab()
@@ -4595,6 +4595,7 @@ export function set(key: string, ...values: string[]) {
     if (key === "csp" && values[0] === "clobber") {
         const msg = "#Error: Mozilla asked us to remove our csp-clobbering code. See https://github.com/tridactyl/tridactyl/issues/1800"
         fillcmdline_tmp(3000, msg)
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw msg
     }
 
@@ -5798,9 +5799,7 @@ export function echo(...str: string[]) {
  * @hidden
  */
 async function js_helper(str: string[]) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
     let JS_ARG = null
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
     let JS_ARGS = []
     let jsContent: string = null
 

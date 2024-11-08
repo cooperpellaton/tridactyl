@@ -10,13 +10,18 @@ export default [
         ignores: [
             "**/dist/*",
             "**/node_modules/*",
+            "eslint.config.mjs",
+            "jest.config.js",
+            "scripts/",
             "build",
             "coverage",
             "**/*.test.ts",
-            "test_utils.ts",
+            "src/lib/test_utils.ts",
+            "custom-eslint-rules",
             "e2e_tests/",
             "compiler/",
             "generated/",
+            "vendor/",
             "**/.*.generated.ts",
             "src/static/typedoc/**/*.js",
         ],
@@ -62,6 +67,7 @@ export default [
             "no-unsafe-finally": "off",
             "no-unused-labels": "error",
             "no-unused-vars": "off",
+            "no-useless-escape": "warn",
             "no-var": "error",
             "object-shorthand": "error",
             "one-var": ["error", "never"],
@@ -81,7 +87,6 @@ export default [
         },
     },
     {
-        // files: ["**/*.{ts,tsx}", ".tmp/**/*.ts"],
         plugins: {
             tsPlugin,
         },
@@ -91,7 +96,6 @@ export default [
                 projectService: true,
                 sourceType: "module",
                 ecmaVersion: 2020,
-                // tsConfigRootDir: __dirname,
             },
         },
         rules: {
@@ -125,12 +129,33 @@ export default [
             "@typescript-eslint/consistent-type-assertions": "error",
             "@typescript-eslint/dot-notation": "off",
             "@typescript-eslint/explicit-function-return-type": "off",
-            "@typescript-eslint/explicit-member-accessibility": "off",
+            "@typescript-eslint/explicit-member-accessibility": [
+                "off",
+                {
+                    accessibility: "explicit",
+                },
+            ],
             "@typescript-eslint/explicit-module-boundary-types": "off",
             "@typescript-eslint/indent": "off",
-            "@typescript-eslint/member-delimiter-style": "off",
+            "@typescript-eslint/member-delimiter-style": [
+                "off",
+                {
+                    multiline: {
+                        delimiter: "none",
+                        requireLast: true,
+                    },
+                    singleline: {
+                        delimiter: "semi",
+                        requireLast: false,
+                    },
+                },
+            ],
             "@typescript-eslint/naming-convention": "off",
+            "@typescript-eslint/no-base-to-string": "warn",
             "@typescript-eslint/no-unused-vars": "off",
+            "@typescript-eslint/member-ordering": "warn",
+            "@typescript-eslint/no-array-constructor": "error",
+            "@typescript-eslint/no-empty-function": "error",
             "@typescript-eslint/no-empty-interface": "error",
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-extra-semi": "off",
@@ -179,6 +204,8 @@ export default [
             ],
             "@typescript-eslint/typedef": "off",
             "@typescript-eslint/unified-signatures": "error",
+            "@typescript-eslint/restrict-template-expressions": "warn",
+            "@typescript-eslint/restrict-plus-operands": "warn"
         },
     },
     {

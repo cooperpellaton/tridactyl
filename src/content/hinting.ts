@@ -415,8 +415,8 @@ interface Hintables {
 export function hintElements(elements: Element[], option = {}) {
     const hintable = toHintablesArray(Array.from(elements))
     const rapid = option["rapid"] ?? false
-    const callback = typeof option["callback"] === "function" ?
-        option["callback"] : x => x
+    const callback =
+        typeof option["callback"] === "function" ? option["callback"] : x => x
     if (!rapid) {
         return new Promise((resolve, reject) => {
             hintPage(hintable, x => x, resolve, reject, rapid)
@@ -431,7 +431,7 @@ export function hintElements(elements: Element[], option = {}) {
         const key = Symbol("select-result")
         const hintCallback = element => {
             callback(element)
-            onSelect.resolve({[key]: element})
+            onSelect.resolve({ [key]: element })
             onSelect = deferCreate()
         }
         const wrap = async function* () {
@@ -443,8 +443,13 @@ export function hintElements(elements: Element[], option = {}) {
             }
         }
         const result = wrap()
-        hintPage(hintable, hintCallback,
-            endDefer.resolve, endDefer.reject, rapid)
+        hintPage(
+            hintable,
+            hintCallback,
+            endDefer.resolve,
+            endDefer.reject,
+            rapid,
+        )
         return result
     }
     function deferCreate() {
@@ -627,7 +632,10 @@ function* hintnames_short(
     hintchars = defaultHintChars(),
 ): IterableIterator<string> {
     const source = hintnames_simple(hintchars)
-    const num2skip = Math.max(0, Math.ceil((n - hintchars.length) / (hintchars.length - 1)));
+    const num2skip = Math.max(
+        0,
+        Math.ceil((n - hintchars.length) / (hintchars.length - 1)),
+    )
     yield* islice(source, num2skip, n + num2skip)
 }
 
@@ -722,7 +730,7 @@ class Hint {
             targetRect.left + offsetLeft,
             targetRect.top + offsetTop,
             targetRect.width,
-            targetRect.height
+            targetRect.height,
         )
 
         this.flag.textContent = name
@@ -742,14 +750,25 @@ class Hint {
         this.hidden = false
     }
 
-    public static isHintable(target: Element): boolean {
-        return target.getClientRects().length > 0
+    get x() {
+        return this._x
     }
 
-    setName(n: string) {
-        this.name = n
-        this.flag.textContent = this.name
+    set x(X: number) {
+        this._x = X
+        this.updatePosition()
     }
+
+    get y() {
+        return this._y
+    }
+
+    set y(Y: number) {
+        this._y = Y
+        this.updatePosition()
+    }
+
+
 
     // These styles would be better with pseudo selectors. Can we do custom ones?
     // If not, do a state machine.
@@ -773,26 +792,17 @@ class Hint {
         }
     }
 
+    public static isHintable(target: Element): boolean {
+        return target.getClientRects().length > 0
+    }
+
     select() {
         this.onSelect(this)
     }
 
-    set x(X: number) {
-        this._x = X
-        this.updatePosition()
-    }
-
-    get x() {
-        return this._x
-    }
-
-    set y(Y: number) {
-        this._y = Y
-        this.updatePosition()
-    }
-
-    get y() {
-        return this._y
+    setName(n: string) {
+        this.name = n
+        this.flag.textContent = this.name
     }
 
     public overlapsWith(h: Hint) {

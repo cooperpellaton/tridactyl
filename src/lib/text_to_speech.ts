@@ -7,6 +7,7 @@ import * as Config from "@src/lib/config"
  *
  * @return voice from the TTS API, or undefined
  */
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 function getVoiceFromName(name: string | "default"): SpeechSynthesisVoice {
     const voices = window.speechSynthesis.getVoices()
 

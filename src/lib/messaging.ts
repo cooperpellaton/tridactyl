@@ -68,7 +68,7 @@ export function attributeCaller(obj) {
                 `Error processing ${message.command}(${message.args})`,
                 e,
             )
-            return Promise.reject(e)
+            throw e;
         }
     }
     return handler
@@ -76,6 +76,7 @@ export function attributeCaller(obj) {
 
 type MessageHandler = (...args: any[]) => any;
 type MessageHandlerObject = {
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     [key: string]: MessageHandler | any;
 };
 
@@ -165,10 +166,10 @@ export async function messageActiveTab(
 }
 
 export async function messageTab(
-    tabId,
+    tabId: number,
     type: TabMessageType,
-    command?,
-    args?,
+    command?: string,
+    args?: any[],
 ): Promise<any> {
     const message: Message = {
         type,

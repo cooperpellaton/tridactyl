@@ -3,10 +3,15 @@ import * as Metadata from "@src/.metadata.generated"
 import * as config from "@src/lib/config"
 import * as aliases from "@src/lib/aliases"
 
-export class ExcmdCompletionOption extends Completions.CompletionOptionHTML
-    implements Completions.CompletionOptionFuse {
+export class ExcmdCompletionOption
+    extends Completions.CompletionOptionHTML
+    implements Completions.CompletionOptionFuse
+{
     public fuseKeys = []
-    constructor(public value: string, public documentation: string = "") {
+    constructor(
+        public value: string,
+        public documentation: string = "",
+    ) {
         super()
         this.fuseKeys.push(this.value)
 
@@ -37,7 +42,6 @@ export class ExcmdCompletionSource extends Completions.CompletionSourceFuse {
         return this.updateOptions(exstr)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
     updateChain(exstr = this.lastExstr, options = this.options) {
         if (this.options.length > 0) this.state = "normal"
         else this.state = "hidden"

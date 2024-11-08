@@ -311,6 +311,7 @@ export abstract class CompletionSourceFuse extends CompletionSource {
         this.next(0)
     }
 
+        /* eslint-disable-next-line @typescript-eslint/require-await */
     async next(inc = 1) {
         if (this.state !== "hidden") {
             // We're abusing `async` here to help us to catch errors in backoff
@@ -332,7 +333,7 @@ export abstract class CompletionSourceFuse extends CompletionSource {
     /* abstract onUpdate(query: string, prefix: string, options: CompletionOptionFuse[]) */
 
     // Lots of methods don't need this but some do
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars-experimental
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async onInput(exstr: string) {}
 }
 

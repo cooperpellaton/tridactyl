@@ -53,7 +53,7 @@ export function isTextEditable(element: Element) {
         // manually inspect the attributes to find it.
         // Google products perform some witchcraft with its search input as
         // seen in #1031, the conditional seems to be enough to fix it.
-        if (element.hasOwnProperty("attributes")) {
+        if (Object.prototype.hasOwnProperty.call(element, "attributes")) {
             for (const attr of element.attributes) {
                 if (attr.name === "role" && attr.value === "application") {
                     return true
