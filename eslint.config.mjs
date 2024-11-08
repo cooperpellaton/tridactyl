@@ -5,6 +5,7 @@ import jsdoc from "eslint-plugin-jsdoc"
 import sonarjs from "eslint-plugin-sonarjs"
 import globals from "globals"
 import tseslint from "typescript-eslint"
+import unsupportedApis from "./custom-eslint-rules/unsupported-apis-plugin.js"
 
 export default [
     {
@@ -250,6 +251,14 @@ export default [
             "jsdoc/check-alignment": "off",
             "jsdoc/check-indentation": "off",
             "jsdoc/newline-after-description": "off",
+        },
+    },
+    {
+        plugins: {
+            unsupportedApis,
+            rules: {
+                "unsupportedApis/enforceUnsupportedApis": "error",
+            },
         },
     },
     {
