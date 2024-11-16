@@ -122,7 +122,7 @@ export class HintConfig implements HintOptions {
                             let newOpenMode: undefined | OpenMode
                             let newState: undefined | State
 
-                            // eslint-disable-next-line sonarjs/max-switch-cases, sonarjs/no-nested-switch
+                            // eslint-disable-next-line sonarjs/max-switch-cases
                             switch (flag) {
                                 case "br":
                                     // Equivalent to -qb, but deprecated

@@ -1,103 +1,145 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -e
+# Default configuration
+declare -A CONFIG=(
+  [QUICK_BUILD]=0
+  [OLD_NATIVE]=0
+  [CLEANSLATE]="node_modules/cleanslate/docs/files/cleanslate.css"
+  [WIN_PYTHON]="python"
+  [BUILD_DIR]="build"
+  [GENERATED_DIR]="generated"
+  [TEMP_DIR]="buildtemp"
+)
 
-for arg in "$@"
-do
-    case $arg in
-        --quick)
-            QUICK_BUILD=1
-            shift
-            ;;
-        --old-native)
-            OLD_NATIVE=1
-            shift
-            ;;
-    esac
-done
+# Help message
+show_help() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
 
-CLEANSLATE="node_modules/cleanslate/docs/files/cleanslate.css"
+Options:
+    --quick         Perform a quick build, skipping documentation and type checking
+    --old-native   Install old native messenger
+    -h, --help     Show this help message
 
-isWindowsMinGW() {
-  is_mingw="False"
-  if [ "$(uname | cut -c 1-5)" = "MINGW" ] \
-    || [ "$(uname | cut -c 1-4)" = "MSYS" ]; then
-    is_mingw="True"
-  fi
-
-  printf "%s" "${is_mingw}"
+EOF
 }
 
-if [ "$(isWindowsMinGW)" = "True" ]; then
-  WIN_PYTHON="py -3"
-  YARN_BIN_DIR="$(cygpath "$(yarn bin)")"
-  PATH=$YARN_BIN_DIR:$PATH
-else
-  PATH="$(yarn bin):$PATH"
-fi
+# Parse command line arguments
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    --quick)
+      CONFIG[QUICK_BUILD]=1
+      shift
+      ;;
+    --old-native)
+      CONFIG[OLD_NATIVE]=1
+      shift
+      ;;
+    -h | --help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Error: Unknown argument '$1'" >&2
+      show_help
+      exit 1
+      ;;
+    esac
+  done
+}
 
-export PATH
+# Utility functions
+is_windows_mingw() {
+  local uname
+  uname=$(uname)
+  [[ ${uname:0:5} == "MINGW" ]] || [[ ${uname:0:4} == "MSYS" ]]
+}
 
-mkdir -p build
-mkdir -p build/static
-mkdir -p generated/static
-mkdir -p generated/static/clippy
+ensure_directory_exists() {
+  local dir=$1
+  if ! mkdir -p "$dir"; then
+    echo "Error: Failed to create directory: $dir" >&2
+    exit 1
+  fi
+}
 
-if [ "$(isWindowsMinGW)" = "True" ]; then
-  $WIN_PYTHON scripts/excmds_macros.py
-else
-  scripts/excmds_macros.py
-fi
+copy_file_if_exists() {
+  local src=$1
+  local dst=$2
+  if [[ -f "$src" ]]; then
+    cp -v "$src" "$dst"
+  else
+    echo "Warning: $src not found, skipping copy." >&2
+  fi
+}
 
-# You can use `--quick` to test out small changes without updating docs / metadata etc.
-# If you get weird behaviour just run a full build
-if [ "$QUICK_BUILD" != "1" ]; then
+# Build steps
+setup_directories() {
+  local dirs=(
+    "${CONFIG[BUILD_DIR]}"
+    "${CONFIG[BUILD_DIR]}/static"
+    "${CONFIG[GENERATED_DIR]}/static"
+    "${CONFIG[GENERATED_DIR]}/static/clippy"
+  )
 
-    # .bracketexpr.generated.ts is needed for metadata generation
-    "$(yarn bin)/nearleyc" src/grammars/bracketexpr.ne > \
-      src/grammars/.bracketexpr.generated.ts
+  for dir in "${dirs[@]}"; do
+    ensure_directory_exists "$dir"
+  done
+}
 
-    # It's important to generate the metadata before the documentation because
-    # missing imports might break documentation generation on clean builds
-    "$(yarn bin)/tsc" compiler/gen_metadata.ts -m commonjs --target es2017 \
-      && node compiler/gen_metadata.js \
-              --out src/.metadata.generated.ts \
-              --themeDir src/static/themes \
-              src/excmds.ts src/lib/config.ts
+run_excmds_macros() {
+  if is_windows_mingw; then
+    "${CONFIG[WIN_PYTHON]}" scripts/excmds_macros.py
+  else
+    scripts/excmds_macros.py
+  fi
+}
 
-    scripts/newtab.md.sh
-    scripts/make_tutorial.sh
-    scripts/make_docs.sh
+perform_full_build() {
+  echo "Performing full build..."
 
-    tsc --project tsconfig.json --noEmit
-else
+  # Generate bracketexpr grammar
+  bunx nearleyc src/grammars/bracketexpr.ne >src/grammars/.bracketexpr.generated.ts
 
-    echo "Warning: dirty rebuild. Skipping docs, metadata and type checking..."
+  # Generate metadata
+  bunx tsc compiler/gen_metadata.ts -m commonjs --target es2017 --skipLibCheck &&
+    bun run compiler/gen_metadata.js \
+      --out src/.metadata.generated.ts \
+      --themeDir src/static/themes \
+      src/excmds.ts src/lib/config.ts
 
-fi
+  # Generate documentation and tutorials
+  scripts/newtab.md.sh
+  scripts/make_tutorial.sh
+  scripts/make_docs.sh
 
-# Actually build the thing
+  # Type checking
+  bunx tsc --project tsconfig.json --noEmit
+}
 
-mkdir -p buildtemp
-node scripts/esbuild.js
-mv buildtemp/* build/
-rmdir buildtemp
+build_main_application() {
+  ensure_directory_exists "${CONFIG[TEMP_DIR]}"
+  bun scripts/esbuild.js
+  mv "${CONFIG[TEMP_DIR]}"/* "${CONFIG[BUILD_DIR]}/"
+  rmdir "${CONFIG[TEMP_DIR]}"
+}
 
-# Copy extra static files across
+copy_static_files() {
+  # Copy main files
+  cp src/manifest.json "${CONFIG[BUILD_DIR]}/"
+  cp -r src/static "${CONFIG[BUILD_DIR]}"
+  cp -r "${CONFIG[GENERATED_DIR]}/static" "${CONFIG[BUILD_DIR]}"
+  cp issue_template.md "${CONFIG[BUILD_DIR]}/"
 
-cp src/manifest.json build/
-cp -r src/static build
-cp -r generated/static build
-cp issue_template.md build/
+  # Clean up large unused files
+  rm -f "${CONFIG[BUILD_DIR]}/static/logo/Tridactyl.psd"
+  rm -f "${CONFIG[BUILD_DIR]}/static/logo/Tridactyl_1024px.png"
+}
 
-# Remove large unused files
-
-rm build/static/logo/Tridactyl.psd
-rm build/static/logo/Tridactyl_1024px.png
-
-# "temporary" fix until we can install new native on CI: install the old native messenger
-if [ "$OLD_NATIVE" = "1" ]; then
-    if [ "$(isWindowsMinGW)" = "True" ]; then
+install_old_native() {
+  if [[ ${CONFIG[OLD_NATIVE]} -eq 1 ]]; then
+    if is_windows_mingw; then
       powershell \
         -NoProfile \
         -InputFormat None \
@@ -106,12 +148,33 @@ if [ "$OLD_NATIVE" = "1" ]; then
     else
       native/install.sh local
     fi
-fi
+  fi
+}
 
-scripts/authors.sh
+# Main execution
+main() {
+  parse_args "$@"
 
-if [ -e "$CLEANSLATE" ] ; then
-	cp -v "$CLEANSLATE" build/static/css/cleanslate.css
-else
-	echo "Couldn't find cleanslate.css. Try running 'yarn install'"
-fi
+  setup_directories
+  run_excmds_macros
+
+  if [[ ${CONFIG[QUICK_BUILD]} -eq 0 ]]; then
+    perform_full_build
+  else
+    echo "Warning: dirty rebuild. Skipping docs, metadata and type checking..."
+  fi
+
+  build_main_application
+  copy_static_files
+  install_old_native
+
+  # Update AUTHORS file
+  scripts/authors.sh
+
+  # Copy cleanslate.css
+  copy_file_if_exists "${CONFIG[CLEANSLATE]}" "${CONFIG[BUILD_DIR]}/static/css/cleanslate.css"
+
+  echo "Build completed successfully!"
+}
+
+main "$@"

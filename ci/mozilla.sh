@@ -1,4 +1,5 @@
-#! /bin/sh
-yarn run build --no-native
+#!/usr/bin/env bash
+
+bun run build
 cd "${0%/*}"/../build || exit 1
-"$(yarn bin)/web-ext" lint
+bunx web-ext lint

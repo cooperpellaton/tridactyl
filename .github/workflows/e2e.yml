@@ -36,13 +36,19 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/cache@v4
       with:
-        node-version: 22
-        cache: 'yarn'
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+    
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
 
     - name: Install deps
-      run: yarn install
+      run: bun install
 
     - name: Setup Firefox
       uses: browser-actions/setup-firefox@v1
@@ -63,4 +69,7 @@ jobs:
         retry_wait_seconds: 10
         shell: bash
         command: |
-          yarn run clean && yarn run build --old-native && yarn make-zip && yarn jest
+          bun run clean 
+          bun run build --old-native
+          bun make-zip 
+          bun jest

@@ -2,7 +2,7 @@
  * Background functions for the native messenger interface
  */
 
-import semverCompare from "semver-compare"
+import { compareVersions } from "compare-versions"
 import * as config from "@src/lib/config"
 import { browserBg, getContext } from "@src/lib/webext"
 
@@ -254,7 +254,7 @@ export async function nativegate(
     try {
         const actualVersion = await getNativeMessengerVersion()
         if (actualVersion !== undefined) {
-            if (semverCompare(version, actualVersion) > 0) {
+            if (compareVersions(version, actualVersion) > 0) {
                 if (interactive)
                     logger.error(
                         "# Please update to native messenger " +
@@ -306,9 +306,10 @@ export async function editor(
     content?: string,
 ) {
     if (content !== undefined) await write(file, content)
-    const editorcmd = (config.get("editorcmd") === "auto"
-        ? await getBestEditor()
-        : config.get("editorcmd")
+    const editorcmd = (
+        config.get("editorcmd") === "auto"
+            ? await getBestEditor()
+            : config.get("editorcmd")
     )
         .replace(/%l/, line)
         .replace(/%c/, col)
@@ -361,17 +362,18 @@ export async function move(
     cleanup: boolean,
 ) {
     const requiredNativeMessengerVersion = "0.3.0"
-    if ((await nativegate(requiredNativeMessengerVersion, false))) {
-        return sendNativeMsg("move", { from, to, overwrite, cleanup }).catch(e => {
-            throw new Error(`Failed to move '${from}' to '${to}'. ${e}.`)
-        })
+    if (await nativegate(requiredNativeMessengerVersion, false)) {
+        return sendNativeMsg("move", { from, to, overwrite, cleanup }).catch(
+            e => {
+                throw new Error(`Failed to move '${from}' to '${to}'. ${e}.`)
+            },
+        )
     } else {
         // older "saveas" scenario for native-messenger < 0.3.0
         return sendNativeMsg("move", { from, to }).catch(e => {
             throw new Error(`Failed to move '${from}' to '${to}'. ${e}.`)
         })
     }
-
 }
 
 export async function listDir(dir: string) {
@@ -403,7 +405,7 @@ export async function run(command: string, content = "") {
 
 export async function runAsync(command: string) {
     const required_version = "0.3.1"
-    if (!await nativegate(required_version, false)) {
+    if (!(await nativegate(required_version, false))) {
         throw new Error(
             `runAsync needs native messenger version >= ${required_version}.`,
         )
@@ -513,14 +515,14 @@ Write-Output $pproc.CommandLine;\
 Get-CimInstance -Property CommandLine,ProcessId -ClassName Win32_Process \
 | where { $_.ProcessId -EQ ${(await sendNativeMsg("ppid", {})).content} } \
 | select -ExpandProperty CommandLine | Write-Output\
-"`
+"`,
             )
         }
     } else {
         const actualVersion = await getNativeMessengerVersion()
 
         // Backwards-compat for Python native messenger
-        if (semverCompare("0.2.0", actualVersion) > 0) {
+        if (compareVersions("0.2.0", actualVersion) > 0) {
             output = await pyeval(
                 // Using ' and + rather than ` because we don't want newlines
                 'handleMessage({"cmd": "run", ' +

@@ -1,4 +1,4 @@
-export { Type } from "./Type"
+export type { Type } from "./Type"
 export { AnyType } from "./AnyType"
 export { BooleanType } from "./BooleanType"
 export { FunctionType } from "./FunctionType"

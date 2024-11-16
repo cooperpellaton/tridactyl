@@ -51,14 +51,14 @@ interface HTMLElement {
     focus(options?: any): void
 }
 
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type*/
 // these functions really can be anything, ditto for the objects
 declare function exportFunction(
     func: Function,
     targetScope: object,
     options?: { defineAs?: string; allowCrossOriginArguments?: boolean },
 ): Function
-/* eslint-enable @typescript-eslint/ban-types */
+/* eslint-enable @typescript-eslint/no-unsafe-function-type */
 
 // Web extension types not in web-ext-types yet
 declare namespace browser.find {

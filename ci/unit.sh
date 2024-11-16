@@ -1,4 +1,4 @@
-#! /bin/sh
-cd "${0%/*}" || exit
-yarn run build --no-native
-"$(yarn bin)/jest" src
+#!/usr/bin/env bash
+
+bun run build
+bunx --bun jest src

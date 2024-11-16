@@ -9,7 +9,9 @@ export const backoff = (
     delay = 50,
 ) =>
     fn().catch(err => {
-        retries > 1
-            ? sleep(delay).then(() => backoff(fn, retries - 1, delay * 2))
-            : Promise.reject(err)
+        if (retries > 1) {
+            return sleep(delay).then(() => backoff(fn, retries - 1, delay * 2))
+        } else {
+            throw err
+        }
     })

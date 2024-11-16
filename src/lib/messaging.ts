@@ -68,46 +68,61 @@ export function attributeCaller(obj) {
                 `Error processing ${message.command}(${message.args})`,
                 e,
             )
-            return Promise.reject(e)
+            throw e;
         }
     }
     return handler
 }
 
+type MessageHandler = (...args: any[]) => any;
+type MessageHandlerObject = {
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    [key: string]: MessageHandler | any;
+};
+
 interface TypedMessage<
-    Root,
+    Root extends Record<string, MessageHandlerObject>,
     Type extends keyof Root,
     Command extends keyof Root[Type]
 > {
     type: Type
     command: Command
-    args: Parameters<Root[Type][Command]>
+    args: Root[Type][Command] extends MessageHandler
+    ? Parameters<Root[Type][Command]>
+    : never
 }
 
 function backgroundHandler<
-    Root,
+    Root extends Record<string, MessageHandlerObject>,
     Type extends keyof Root,
     Command extends keyof Root[Type]
 >(
     root: Root,
     message: TypedMessage<Root, Type, Command>,
-): ReturnType<Root[Type][Command]> {
-    return root[message.type][message.command](...message.args)
+): ReturnType<MessageHandler> {
+    const handler = root[message.type][message.command];
+    if (typeof handler === 'function') {
+        return handler(...message.args);
+    }
+    throw new Error(`Handler for ${String(message.type)}.${String(message.command)} is not a function`);
 }
 
-export function setupListener<Root>(root: Root) {
+export function setupListener<Root extends Record<string, MessageHandlerObject>>(root: Root) {
     browser.runtime.onMessage.addListener(
         (message: any) => {
             if (message.type in root) {
-                if (!(message.command in root[message.type]))
+                const handler = root[message.type][message.command];
+                if (typeof handler !== 'function') {
                     throw new Error(
-                        `missing handler in protocol ${message.type} ${message.command}`,
+                        `missing or invalid handler in protocol ${message.type} ${message.command}`,
                     )
-                if (!Array.isArray(message.args))
+                }
+                if (!Array.isArray(message.args)) {
                     throw new Error(
                         `wrong arguments in protocol ${message.type} ${message.command}`,
                     )
-                return Promise.resolve(backgroundHandler(root, message))
+                }
+                return Promise.resolve(handler(...message.args))
             }
         },
     )
@@ -118,9 +133,18 @@ export function setupListener<Root>(root: Root) {
 /** Send a message to non-content scripts */
 export async function message<
     Type extends keyof Messages.Background,
-    Command extends keyof Messages.Background[Type],
-    F extends ((...args: any[]) => any) & Messages.Background[Type][Command]
->(type: Type, command: Command, ...args: Parameters<F>) {
+    Command extends keyof Messages.Background[Type]
+>(
+    type: Type,
+    command: Command,
+    ...args: Messages.Background[Type][Command] extends (...args: any[]) => any
+        ? Parameters<Messages.Background[Type][Command]>
+        : never
+): Promise<
+    Messages.Background[Type][Command] extends (...args: any[]) => any
+        ? ReturnType<Messages.Background[Type][Command]>
+        : never
+> {
     const message: TypedMessage<Messages.Background, Type, Command> = {
         type,
         command,
@@ -142,10 +166,10 @@ export async function messageActiveTab(
 }
 
 export async function messageTab(
-    tabId,
+    tabId: number,
     type: TabMessageType,
-    command?,
-    args?,
+    command?: string,
+    args?: any[],
 ): Promise<any> {
     const message: Message = {
         type,

@@ -24,7 +24,7 @@ prettierUgly() {
     local acc=""
     local IFS=$'\n'
     for jsfile in $1; do
-        diff <(staged "$jsfile") <(staged "$jsfile" | "$(yarn bin)/prettier" --stdin-filepath "$jsfile") >/dev/null || acc="$jsfile"$'\n'"$acc"
+        diff <(staged "$jsfile") <(staged "$jsfile" | bunx prettier --stdin-filepath "$jsfile") >/dev/null || acc="$jsfile"$'\n'"$acc"
     done
     echo "$acc"
 }
@@ -35,28 +35,25 @@ eslintUgly() {
     local tmpdir
 
     mkdir -p ".tmp"
-    if [[ "$(uname)" == "Darwin" ]]; then
-        tmpdir=$(gmktemp --tmpdir=".tmp/" -d "tslint.XXXXXXXXX")
-    else
-        tmpdir=$(mktemp --tmpdir=".tmp/" -d "tslint.XXXXXXXXX")
-    fi
+    tmpdir=$(mktemp --tmpdir=".tmp/" -d "tslint.XXXXXXXXX")
 
     for jsfile in "$@"; do
         tmpfile="$tmpdir/$jsfile"
         mkdir -p "$(dirname "$tmpfile")"
         staged "$jsfile" > "$tmpfile"
-        "$(yarn bin)/eslint" --no-ignore --quiet -o /dev/null "$tmpfile" || acc="$jsfile"$'\n'"$acc"
+        bunx eslint --no-ignore --quiet -o /dev/null "$tmpfile" || acc="$jsfile"$'\n'"$acc"
     done
     rm -rf "$tmpdir"
     echo "$acc"
 }
 
+# Returns a list of files with console.log statements
 noisy() {
-    local acc=()
-    for jsfile in "$@"; do
-        if [ "$(git diff --cached "$jsfile" | grep '^+.*console.log' -c)" -gt '0' ] ; then
-            acc+=("jsfile")
+    local jsfiles=()
+    while IFS= read -r line; do
+        if [[ $line =~ ^\+\s*console\.log ]]; then
+            jsfiles+=("$1")
         fi
-    done
-    echo "${acc[@]}"
+    done < <(git diff --cached "$@" | grep '^+.*console.log')
+    echo "${jsfiles[@]}"
 }

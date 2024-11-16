@@ -54,7 +54,7 @@ module.exports = {
             apiTooRecent: "{{ api }} is not supported on firefox {{ version }}",
         }
     },
-    create(context) {
+    create: function(context) {
         return {
             'MemberExpression[object.name="browser"]': (n) => detectBrowserUsage(context, n),
             'MemberExpression[object.name="browserBg"]': (n) => detectBrowserUsage(context, n),

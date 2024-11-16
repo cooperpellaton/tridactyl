@@ -1,4 +1,8 @@
 #!/bin/sh
 dest=generated/static/docs
-"$(yarn bin)/typedoc" --theme src/static/typedoc/ --exclude "src/**/?(test_utils|*.test).ts"  --out $dest src --ignoreCompilerErrors
+# The theme is a TSX file. This turns it into a JS plugin.
+bunx tsc src/static/typedoc/theme.tsx -m commonjs -t esnext --jsx react --jsxFactory "JSX.createElement" --jsxFragmentFactory "JSX.Fragment" --skipLibCheck
+# Run typedoc as partially defined in tsconfig.json
+bunx typedoc --out $dest
+# Copy the result.
 cp -r $dest build/static/

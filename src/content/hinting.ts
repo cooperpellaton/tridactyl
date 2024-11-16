@@ -415,8 +415,8 @@ interface Hintables {
 export function hintElements(elements: Element[], option = {}) {
     const hintable = toHintablesArray(Array.from(elements))
     const rapid = option["rapid"] ?? false
-    const callback = typeof option["callback"] === "function" ?
-        option["callback"] : x => x
+    const callback =
+        typeof option["callback"] === "function" ? option["callback"] : x => x
     if (!rapid) {
         return new Promise((resolve, reject) => {
             hintPage(hintable, x => x, resolve, reject, rapid)
@@ -431,7 +431,7 @@ export function hintElements(elements: Element[], option = {}) {
         const key = Symbol("select-result")
         const hintCallback = element => {
             callback(element)
-            onSelect.resolve({[key]: element})
+            onSelect.resolve({ [key]: element })
             onSelect = deferCreate()
         }
         const wrap = async function* () {
@@ -443,8 +443,13 @@ export function hintElements(elements: Element[], option = {}) {
             }
         }
         const result = wrap()
-        hintPage(hintable, hintCallback,
-            endDefer.resolve, endDefer.reject, rapid)
+        hintPage(
+            hintable,
+            hintCallback,
+            endDefer.resolve,
+            endDefer.reject,
+            rapid,
+        )
         return result
     }
     function deferCreate() {
@@ -627,7 +632,10 @@ function* hintnames_short(
     hintchars = defaultHintChars(),
 ): IterableIterator<string> {
     const source = hintnames_simple(hintchars)
-    const num2skip = Math.max(0, Math.ceil((n - hintchars.length) / (hintchars.length - 1)));
+    const num2skip = Math.max(
+        0,
+        Math.ceil((n - hintchars.length) / (hintchars.length - 1)),
+    )
     yield* islice(source, num2skip, n + num2skip)
 }
 
@@ -678,7 +686,7 @@ type HintSelectedCallback = (x: any) => any
 @hidden */
 class Hint {
     public readonly flag = document.createElement("span")
-    public readonly rect: ClientRect = null
+    public readonly rect: DOMRect = null
     public result: any = null
 
     public width = 0
@@ -708,22 +716,22 @@ class Hint {
 
         // Find the first visible client rect of the target
         const clientRects = target.getClientRects()
-        let rect = clientRects[0]
-        for (const recti of clientRects) {
-            if (recti.bottom + offsetTop > 0 && recti.right + offsetLeft > 0) {
-                rect = recti
+        let targetRect = clientRects[0]
+
+        // Find the first visible rectangle
+        for (const rect of clientRects) {
+            if (rect.bottom + offsetTop > 0 && rect.right + offsetLeft > 0) {
+                targetRect = rect
                 break
             }
         }
 
-        this.rect = {
-            top: rect.top + offsetTop,
-            bottom: rect.bottom + offsetTop,
-            left: rect.left + offsetLeft,
-            right: rect.right + offsetLeft,
-            width: rect.width,
-            height: rect.height,
-        }
+        this.rect = new DOMRect(
+            targetRect.left + offsetLeft,
+            targetRect.top + offsetTop,
+            targetRect.width,
+            targetRect.height,
+        )
 
         this.flag.textContent = name
         this.flag.className = "TridactylHint"
@@ -733,8 +741,8 @@ class Hint {
         this.flag.classList.add("TridactylHint" + target.tagName)
         classes?.forEach(f => this.flag.classList.add(f))
 
-        const top = rect.top > 0 ? this.rect.top : offsetTop + pad
-        const left = rect.left > 0 ? this.rect.left : offsetLeft + pad
+        const top = targetRect.top > 0 ? this.rect.top : offsetTop + pad
+        const left = targetRect.left > 0 ? this.rect.left : offsetLeft + pad
         this.x = window.scrollX + left
         this.y = window.scrollY + top
 
@@ -742,14 +750,25 @@ class Hint {
         this.hidden = false
     }
 
-    public static isHintable(target: Element): boolean {
-        return target.getClientRects().length > 0
+    get x() {
+        return this._x
     }
 
-    setName(n: string) {
-        this.name = n
-        this.flag.textContent = this.name
+    set x(X: number) {
+        this._x = X
+        this.updatePosition()
     }
+
+    get y() {
+        return this._y
+    }
+
+    set y(Y: number) {
+        this._y = Y
+        this.updatePosition()
+    }
+
+
 
     // These styles would be better with pseudo selectors. Can we do custom ones?
     // If not, do a state machine.
@@ -773,26 +792,17 @@ class Hint {
         }
     }
 
+    public static isHintable(target: Element): boolean {
+        return target.getClientRects().length > 0
+    }
+
     select() {
         this.onSelect(this)
     }
 
-    set x(X: number) {
-        this._x = X
-        this.updatePosition()
-    }
-
-    get x() {
-        return this._x
-    }
-
-    set y(Y: number) {
-        this._y = Y
-        this.updatePosition()
-    }
-
-    get y() {
-        return this._y
+    setName(n: string) {
+        this.name = n
+        this.flag.textContent = this.name
     }
 
     public overlapsWith(h: Hint) {
