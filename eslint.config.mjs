@@ -23,7 +23,6 @@ export default [
             "e2e_tests/",
             "compiler/",
             "generated/",
-            "vendor/",
             "**/.*.generated.ts",
             "src/static/typedoc/**/*.js",
         ],
